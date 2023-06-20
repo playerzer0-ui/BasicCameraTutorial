@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Comora;
+using System;
 
 namespace BasicCameraTutorial
 {
@@ -13,6 +14,7 @@ namespace BasicCameraTutorial
         private Texture2D bg;
         private Rectangle rect;
         private Texture2D pixel;
+        private RenderTarget2D renderTarget;
 
         Player player = new Player();
         Camera camera;
@@ -50,9 +52,9 @@ namespace BasicCameraTutorial
                 Exit();
 
             // TODO: Add your update logic here
-            player.Update(gameTime);
-            camera.Position = player.Pos;
-            camera.Update(gameTime);
+            //player.Update(gameTime);
+            //camera.Position = player.Pos;
+            //camera.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -61,10 +63,9 @@ namespace BasicCameraTutorial
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            _spriteBatch.Begin(camera);
+            _spriteBatch.Begin();
             _spriteBatch.Draw(bg, new Vector2(-500, -500), Color.White);
             _spriteBatch.Draw(playerSprite, new Vector2(player.Pos.X - 48, player.Pos.Y - 48), Color.White);
-            _spriteBatch.Draw(pixel, camera.GetBounds(), new Color(255, 0, 0, 128));
             _spriteBatch.End();
 
             base.Draw(gameTime);
