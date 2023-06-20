@@ -14,10 +14,10 @@ namespace BasicCameraTutorial
         private Texture2D bg;
         private Rectangle rect;
         private Texture2D pixel;
-        private RenderTarget2D renderTarget;
 
         Player player = new Player();
         Camera camera;
+        Canvas canvas;
 
         public Game1()
         {
@@ -31,7 +31,8 @@ namespace BasicCameraTutorial
         {
             // TODO: Add your initialization logic here
             camera = new Camera(_graphics.GraphicsDevice);
-
+            canvas = new Canvas(_graphics.GraphicsDevice, 1280, 720);
+            SetResolution(1280, 720);
             base.Initialize();
         }
 
@@ -51,24 +52,37 @@ namespace BasicCameraTutorial
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            SetResolution(_graphics.GraphicsDevice.Viewport.Width, _graphics.GraphicsDevice.Viewport.Height);
             // TODO: Add your update logic here
-            //player.Update(gameTime);
-            //camera.Position = player.Pos;
-            //camera.Update(gameTime);
+            player.Update(gameTime);
+            camera.Position = player.Pos;
+            camera.Update(gameTime);
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            
             // TODO: Add your drawing code here
-            _spriteBatch.Begin();
+            canvas.Activate();
+            _spriteBatch.Begin(camera);
             _spriteBatch.Draw(bg, new Vector2(-500, -500), Color.White);
             _spriteBatch.Draw(playerSprite, new Vector2(player.Pos.X - 48, player.Pos.Y - 48), Color.White);
             _spriteBatch.End();
 
+            canvas.Draw(_spriteBatch);
+
             base.Draw(gameTime);
+        }
+
+        private void SetResolution(int width, int height)
+        {
+            _graphics.PreferredBackBufferWidth = width;
+            _graphics.PreferredBackBufferHeight = height;
+            Window.IsBorderless = false;
+            _graphics.ApplyChanges();
+            canvas.SetDestinationRectangle();
         }
     }
 }
