@@ -12,8 +12,8 @@ namespace BasicCameraTutorial
         private SpriteBatch _spriteBatch;
         private Texture2D playerSprite;
         private Texture2D bg;
-        private Rectangle rect;
         private Texture2D pixel;
+        private SpriteFont gameFont;
 
         Player player = new Player();
         Camera camera;
@@ -25,14 +25,17 @@ namespace BasicCameraTutorial
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             Window.AllowUserResizing = true;
+            //_graphics.IsFullScreen = true;
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
             camera = new Camera(_graphics.GraphicsDevice);
+
             canvas = new Canvas(_graphics.GraphicsDevice, 1280, 720);
             SetResolution(1280, 720);
+            _graphics.ApplyChanges();
             base.Initialize();
         }
 
@@ -45,30 +48,41 @@ namespace BasicCameraTutorial
             bg = Content.Load<Texture2D>("background");
             pixel = new Texture2D(GraphicsDevice, 1, 1);
             pixel.SetData<Color>(new Color[] { Color.White });
+            gameFont = Content.Load<SpriteFont>("File");
         }
 
         protected override void Update(GameTime gameTime)
         {
+            //the key
+            int w = _graphics.GraphicsDevice.Viewport.Width;
+            int h = _graphics.GraphicsDevice.Viewport.Height;
+            //to the problem, to handle the camera offset
+            int diffW = (w - 1280) / 2;
+            int diffH = (h - 720) / 2;
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            SetResolution(_graphics.GraphicsDevice.Viewport.Width, _graphics.GraphicsDevice.Viewport.Height);
             // TODO: Add your update logic here
+
             player.Update(gameTime);
-            camera.Position = player.Pos;
+            SetResolution(_graphics.GraphicsDevice.Viewport.Width, _graphics.GraphicsDevice.Viewport.Height);
+            //add the player position with the diffs
+            camera.Position = Vector2.Clamp(new Vector2(player.Pos.X + diffW, player.Pos.Y + diffH), new Vector2(200, 200), new Vector2(1300, 1300));
             camera.Update(gameTime);
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
             
-            // TODO: Add your drawing code here
+            GraphicsDevice.Clear(Color.Gray);
+
             canvas.Activate();
             _spriteBatch.Begin(camera);
             _spriteBatch.Draw(bg, new Vector2(-500, -500), Color.White);
             _spriteBatch.Draw(playerSprite, new Vector2(player.Pos.X - 48, player.Pos.Y - 48), Color.White);
+            _spriteBatch.DrawString(gameFont, "res:" + camera.Position, new Vector2(100, 100), Color.White);
             _spriteBatch.End();
 
             canvas.Draw(_spriteBatch);
