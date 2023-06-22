@@ -60,6 +60,8 @@ namespace BasicCameraTutorial
             int diffW = (w - 1280) / 2;
             int diffH = (h - 720) / 2;
 
+            
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -68,7 +70,11 @@ namespace BasicCameraTutorial
             player.Update(gameTime);
             SetResolution(_graphics.GraphicsDevice.Viewport.Width, _graphics.GraphicsDevice.Viewport.Height);
             //add the player position with the diffs
-            camera.Position = Vector2.Clamp(new Vector2(player.Pos.X + diffW, player.Pos.Y + diffH), new Vector2(200, 200), new Vector2(1300, 1300));
+            camera.Position = Vector2.Clamp(
+                new Vector2(player.Pos.X + diffW, player.Pos.Y + diffH), 
+                new Vector2((float)(w * 0.25), (float)(h * 0.10)), 
+                new Vector2((float)(w * 0.80) + 120, (float)(h * 0.95) + 700)
+                );
             camera.Update(gameTime);
             base.Update(gameTime);
         }
@@ -83,6 +89,7 @@ namespace BasicCameraTutorial
             _spriteBatch.Draw(bg, new Vector2(-500, -500), Color.White);
             _spriteBatch.Draw(playerSprite, new Vector2(player.Pos.X - 48, player.Pos.Y - 48), Color.White);
             _spriteBatch.DrawString(gameFont, "res:" + camera.Position, new Vector2(100, 100), Color.White);
+            _spriteBatch.DrawString(gameFont, "bg:" + camera.Width, new Vector2(100, 140), Color.White);
             _spriteBatch.End();
 
             canvas.Draw(_spriteBatch);
